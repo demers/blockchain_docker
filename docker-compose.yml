@@ -3,6 +3,7 @@ version: '2.1'
 services:
   blockchain:
     build: .
+    image: blockchain
     container_name: blockchain
     restart: always
     ports:

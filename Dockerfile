@@ -2,14 +2,18 @@ FROM ubuntu:17.10
 
 MAINTAINER FND <fndemers@gmail.com>
 
+ENV PROJECTNAME=BLOCKCHAIN
+
 ENV WORKDIRECTORY /root
 
 RUN apt-get update
 
-RUN apt install -y git python3 python3-pip
+RUN apt install -y git curl python3 python3-pip
 
 # Mise à jour PIP
 RUN pip3 install --upgrade pip
+
+ENV PYTHONPATH .
 
 # Installation Flask
 #RUN pip install --user flask
@@ -22,4 +26,4 @@ WORKDIR ${WORKDIRECTORY}/blockchain
 
 EXPOSE 5000
 
-CMD python3 blockchain.py
+CMD python3 blockchain.py -p 5000
