@@ -2,7 +2,7 @@
 
 HEIGHT=15
 WIDTH=80
-CHOICE_HEIGHT=10
+CHOICE_HEIGHT=15
 BACKTITLE="Gestion Blockchain version 1.0"
 TITLE="Gestion de chaîne de blocs"
 MENU="Choisir une des options suivantes:"
@@ -13,7 +13,7 @@ NOPORT=0
 
 OPTIONS=(1 "Lister les chaînes de blocs disponibles"
          2 "Changer le port de la chaîne de blocs"
-         3 "Créer une nouvelle chaîne de blocs"
+         3 "Créer ou démarrer une nouvelle chaîne de blocs"
          4 "Ajouter une transaction;"
          5 "Afficher la chaîne de blocs;"
          6 "Miner les dernières transactions ajoutées;"
@@ -37,7 +37,7 @@ clear
                 echo "Voici la liste des ports disponibles: " ${PORT[@]}
                 echo "Voici la liste des chaînes de blocs disponibles (Docker):"
                 docker ps
-                #netstat -tlpn
+                netstat -tlpn
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             2)
@@ -51,22 +51,29 @@ clear
                 read -p "Entrez le nouveau port d'accès à la chaîne de bloc: " NOUVEAUPORT
                 PORT[${#PORT[@]}]=$NOUVEAUPORT
                 echo "Voici la liste des ports disponibles: " ${PORT[@]}
-                read -p "Voulez-vous créer la chaîne de blocs avec Docker pour ce port? (o/n)" CHOIX
+                read -p "Voulez-vous créer la chaîne de blocs avec Docker pour ce port ($NOUVEAUPORT)? (o/n)" CHOIX
                 if [[ $CHOIX =~ ^[Oo]$ ]]
                 then
                     cp -v -f Dockerfile Dockerfile$NOUVEAUPORT
                     sed -i -e "s/5000/$NOUVEAUPORT/g" "Dockerfile$NOUVEAUPORT"
-                    echo "Voici les commandes qui seront exécutées:"
+                    echo "Voici la commande qui sera exécutée:"
                     echo "docker build -t blockchain$NOUVEAUPORT -f Dockerfile$NOUVEAUPORT ."
-                    echo "docker run -d -p $NOUVEAUPORT:$NOUVEAUPORT --net=host --name blockchain$NOUVEAUPORT blockchain$NOUVEAUPORT"
                     docker build -t blockchain$NOUVEAUPORT -f Dockerfile$NOUVEAUPORT .
-                    sleep 1
+                fi
+
+                read -p "Voulez-vous démarrer la chaîne de blocs pour ce port ($NOUVEAUPORT)? (o/n)" CHOIX
+                if [[ $CHOIX =~ ^[Oo]$ ]]
+                then
+                    echo "Voici les commandes qui seront exécutées:"
+                    echo "docker run -d -p $NOUVEAUPORT:$NOUVEAUPORT --net=host --name blockchain$NOUVEAUPORT blockchain$NOUVEAUPORT"
+                    echo "docker rm blockchain$NOUVEAUPORT"
+                    docker rm blockchain$NOUVEAUPORT
                     docker run -d -p $NOUVEAUPORT:$NOUVEAUPORT --net=host --name blockchain$NOUVEAUPORT blockchain$NOUVEAUPORT
                 fi
                 echo "Vérifiez les ports ouverts..."
                 echo "Voici la liste des chaînes de blocs disponibles:"
                 docker ps
-                #netstat -tlpn
+                netstat -tlpn
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             4)
@@ -102,9 +109,9 @@ clear
                 ;;
             7)
                 read -p "Quel est le port de la chaîne de blocs à enregistrer? " PORTENR
-                curl -X POST -H "Content-Type: application/json" -d "{
+                curl -v -X POST -H "Content-Type: application/json" -d "{
                     \"nodes\": [ \"http://localhost:$PORTENR\" ]
-                    }" "http://localhost:${PORT[$NOPORT]}/transactions/new"
+                    }" "http://localhost:${PORT[$NOPORT]}/nodes/register"
                 ;;
             8)
                 echo Le port considéré est: ${PORT[$NOPORT]}
