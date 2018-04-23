@@ -1,8 +1,8 @@
 #!/bin/bash
 
-HEIGHT=15
+HEIGHT=16
 WIDTH=80
-CHOICE_HEIGHT=15
+CHOICE_HEIGHT=18
 BACKTITLE="Gestion Blockchain version 1.0"
 TITLE="Gestion de chaîne de blocs"
 MENU="Choisir une des options suivantes:"
@@ -11,9 +11,12 @@ MENU="Choisir une des options suivantes:"
 PORT=("5000")
 NOPORT=0
 
-OPTIONS=(1 "Lister les chaînes de blocs disponibles"
-         2 "Changer le port de la chaîne de blocs"
-         3 "Créer ou démarrer une nouvelle chaîne de blocs"
+while true;
+do
+
+    OPTIONS=(1 "Lister les chaînes de blocs disponibles;"
+         2 "Changer le port de la chaîne de blocs (actuellement, ${PORT[$NOPORT]});"
+         3 "Créer ou démarrer une nouvelle chaîne de blocs;"
          4 "Ajouter une transaction;"
          5 "Afficher la chaîne de blocs;"
          6 "Miner les dernières transactions ajoutées;"
@@ -21,8 +24,6 @@ OPTIONS=(1 "Lister les chaînes de blocs disponibles"
          8 "Résoudre un conflit de chaîne de blocs (consensus);"
          9 "Quitter")
 
-while true;
-do
     CHOICE=$(dialog --clear \
                     --backtitle "$BACKTITLE" \
                     --title "$TITLE" \
@@ -45,7 +46,7 @@ clear
                 DERNIERPORTS=$((${#PORT[@]} - 1))
                 read -p "Fournir le numéro du port à considérer (0 à $DERNIERPORTS) " NOPORT
                 echo Le nouveau port considéré sera: ${PORT[$NOPORT]}
-                sleep 4
+                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             3)
                 read -p "Entrez le nouveau port d'accès à la chaîne de bloc: " NOUVEAUPORT
@@ -71,6 +72,7 @@ clear
                     docker run -d -p $NOUVEAUPORT:$NOUVEAUPORT --net=host --name blockchain$NOUVEAUPORT blockchain$NOUVEAUPORT
                 fi
                 echo "Vérifiez les ports ouverts..."
+                sleep 1
                 echo "Voici la liste des chaînes de blocs disponibles:"
                 docker ps
                 netstat -tlpn
@@ -97,6 +99,7 @@ clear
                     \"recipient\": \"$RECIPIENT\",
                     \"amount\": $AMOUNT
                     }" "http://localhost:${PORT[$NOPORT]}/transactions/new"
+                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             5)
                 echo "Voici le contenu de la chaîne de blocs..."
@@ -109,13 +112,15 @@ clear
                 ;;
             7)
                 read -p "Quel est le port de la chaîne de blocs à enregistrer? " PORTENR
-                curl -v -X POST -H "Content-Type: application/json" -d "{
-                    \"nodes\": [ \"http://localhost:$PORTENR\" ]
+                curl -X POST -H "Content-Type: application/json" -d "{
+                    \"nodes\": [ \"localhost:$PORTENR\" ]
                     }" "http://localhost:${PORT[$NOPORT]}/nodes/register"
+                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             8)
                 echo Le port considéré est: ${PORT[$NOPORT]}
                 echo "La résolution (consensus) sera faite sur cette chaîne de blocs..."
+                echo "curl \"http://localhost:${PORT[$NOPORT]}/nodes/resolve\""
                 curl "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
