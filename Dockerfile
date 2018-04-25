@@ -6,9 +6,10 @@ ENV PROJECTNAME=BLOCKCHAIN
 
 ENV WORKDIRECTORY /root
 
-RUN apt-get update
+RUN apt-get -y update
 
 RUN apt install -y git curl python3 python3-pip
+RUN python3 --version
 RUN apt-get clean && apt-get -y update && apt-get install -y locales && locale-gen fr_CA.UTF-8
 ENV TZ=America/Toronto
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
