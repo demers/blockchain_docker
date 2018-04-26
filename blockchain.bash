@@ -147,7 +147,7 @@ clear
             8)
                 echo Le port considéré est: ${PORT[$NOPORT]}
                 echo "La résolution (consensus) sera faite sur cette chaîne de blocs..."
-                adresseip=$(($PORTENR%255))
+                #adresseip=$(($PORTENR%255))
                 echo "curl \"http://localhost:${PORT[$NOPORT]}/nodes/resolve\""
                 curl "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
