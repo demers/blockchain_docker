@@ -24,7 +24,7 @@ ENV PYTHONPATH .
 RUN pip3 install Flask==0.12.2 requests==2.18.4
 
 RUN cd ${WORKDIRECTORY} \
-    && git clone https://github.com/dvf/blockchain
+    && git clone https://github.com/demers/blockchain
 
 WORKDIR ${WORKDIRECTORY}/blockchain
 

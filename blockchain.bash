@@ -23,12 +23,9 @@ function creerConteneur() {
     then
         echo "Voici les commandes qui seront exécutées:"
         echo "docker rm blockchain$1"
-        #NOADRESSEIP=$(($1%255))
         echo "docker run -d -p $1:$1 --network blockchain --name blockchain$1 blockchain$1"
         docker rm blockchain$1
         docker run -d -p $1:$1 --network blockchain --name blockchain$1 blockchain$1
-        #docker run -d -p $1:$1 --network blockchain --ip 10.10.10.$NOADRESSEIP --name blockchain$1 blockchain$1
-        #docker run -d -p $1:$1 --net=host --name blockchain$1 blockchain$1
     fi
     echo "Vérifiez les ports ouverts..."
     sleep 1
@@ -87,8 +84,6 @@ clear
                 ;;
             2)
                 echo "Voici la liste des ports disponibles: " ${PORT[@]}
-                DERNIERPORTS=$((${#PORT[@]} - 1))
-                #read -p "Fournir le numéro du port à considérer (0 à $DERNIERPORTS) " NOPORT
                 read -p "Fournir le port voulu parmi cette liste ci-haut: " PORTCHOISI
                 for i in "${!PORT[@]}"; do
                     if [[ "${PORT[$i]}" = "${PORTCHOISI}" ]]; then
@@ -137,7 +132,6 @@ clear
                 ;;
             7)
                 read -p "Quel est le port de la chaîne de bloc à enregistrer? " PORTENR
-                #ADRESSEIPENR=$(($PORTENR%255))
                 echo "Node ajouté: blockchain$PORTENR:$PORTENR"
                 curl -X POST -H "Content-Type: application/json" -d "{
                     \"nodes\": [ \"blockchain$PORTENR:$PORTENR\" ]
@@ -147,7 +141,6 @@ clear
             8)
                 echo Le port considéré est: ${PORT[$NOPORT]}
                 echo "La résolution (consensus) sera faite sur cette chaîne de blocs..."
-                #adresseip=$(($PORTENR%255))
                 echo "curl \"http://localhost:${PORT[$NOPORT]}/nodes/resolve\""
                 curl "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
