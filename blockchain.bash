@@ -154,6 +154,8 @@ clear
                     docker rm blockchain${PORT[$i]}
                     echo "Suppression de l'image blockchain${PORT[$i]}..."
                     docker rmi blockchain${PORT[$i]}
+                    echo "Suppression du fichier Dockerfile${PORT[$i]}..."
+                    rm -f Dockerfile${PORT[$i]}
                 done
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
