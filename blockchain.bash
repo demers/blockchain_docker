@@ -1,9 +1,9 @@
 #!/bin/bash
 
-HEIGHT=16
+HEIGHT=17
 WIDTH=80
-CHOICE_HEIGHT=18
-BACKTITLE="Gestion Blockchain version 1.1"
+CHOICE_HEIGHT=19
+BACKTITLE="Gestion Blockchain version 1.2"
 TITLE="Gestion de chaîne de blocs"
 MENU="Choisir une des options suivantes:"
 
@@ -63,7 +63,8 @@ do
          6 "Miner les dernières transactions ajoutées;"
          7 "Enregistrer une chaîne de bloc;"
          8 "Résoudre un conflit de chaîne de bloc (consensus);"
-         9 "Quitter")
+         9 "Supprimer les conteneurs et les images associées;"
+         10 "Quitter")
 
     CHOICE=$(dialog --clear \
                     --backtitle "$BACKTITLE" \
@@ -146,6 +147,17 @@ clear
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             9)
+                for i in "${!PORT[@]}"; do
+                    echo "Arrêt du conteneur blockchain${PORT[$i]}..."
+                    docker stop blockchain${PORT[$i]}
+                    echo "Suppression du conteneur blockchain${PORT[$i]}..."
+                    docker rm blockchain${PORT[$i]}
+                    echo "Suppression de l'image blockchain${PORT[$i]}..."
+                    docker rmi blockchain${PORT[$i]}
+                done
+                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
+                ;;
+            10)
                 echo "Sortie du script."
                 echo "Script de gestion du blockchain écrit en Python"
                 echo "disponible à https://github.com/dvf/blockchain"
