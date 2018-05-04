@@ -12,7 +12,7 @@ function creerConteneur() {
     if [[ $CHOIX =~ ^[Oo]$ ]]
     then
         cp -v -f Dockerfile Dockerfile$1
-        sed -i -e "s/5000/$NOUVEAUPORT/g" "Dockerfile$1"
+        sed -i -e "s/5000/$1/g" "Dockerfile$1"
         echo "Voici la commande qui sera exécutée:"
         echo "docker build -t blockchain$1 -f Dockerfile$1 ."
         docker build -t blockchain$1 -f Dockerfile$1 .
