@@ -23,9 +23,9 @@ function creerConteneur() {
     then
         echo "Voici les commandes qui seront exécutées:"
         echo "docker rm blockchain$1"
-        echo "docker run -d -p $1:$1 --network blockchain --name blockchain$1 blockchain$1"
+        echo "docker run -d -p $1:$1 --network=\"blockchain\" --name blockchain$1 blockchain$1"
         docker rm blockchain$1
-        docker run -d -p $1:$1 --network blockchain --name blockchain$1 blockchain$1
+        docker run -d -p $1:$1 --network="blockchain" --name blockchain$1 blockchain$1
     fi
     echo "Vérifiez les ports ouverts..."
     sleep 1
