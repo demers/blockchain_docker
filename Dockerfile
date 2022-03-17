@@ -1,6 +1,7 @@
-FROM ubuntu:17.10
+#FROM ubuntu:17.10
+FROM ubuntu:18.04
 
-MAINTAINER FND <fndemers@gmail.com>
+MAINTAINER FND <fndemers@csfoy.ca>
 
 ENV PROJECTNAME=BLOCKCHAIN
 
@@ -16,12 +17,12 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV PYTHONIOENCODING=utf-8
 
 # Mise à jour PIP
-RUN pip3 install --upgrade pip
+#RUN pip3 install --upgrade pip
 
 ENV PYTHONPATH .
 
-# Installation Flask
-RUN pip3 install Flask==0.12.2 requests==2.18.4
+# Installation Flask version antérieure
+RUN pip3 install werkzeug==0.16.1 Flask==0.12.2 requests==2.18.4
 
 RUN cd ${WORKDIRECTORY} \
     && git clone https://github.com/demers/blockchain
