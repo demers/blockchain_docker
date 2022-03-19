@@ -3,7 +3,7 @@
 HEIGHT=17
 WIDTH=80
 CHOICE_HEIGHT=19
-BACKTITLE="Gestion Blockchain version 1.2"
+BACKTITLE="Gestion Blockchain version 1.3"
 TITLE="Gestion de chaîne de blocs"
 MENU="Choisir une des options suivantes:"
 
@@ -27,11 +27,11 @@ function creerConteneur() {
         docker rm blockchain$1
         docker run -d -p $1:$1 --network="blockchain" --name blockchain$1 blockchain$1
     fi
-    echo "Vérifiez les ports ouverts..."
+    echo "Vérification des ports ouverts..."
     sleep 1
     echo "Voici la liste des chaînes de blocs disponibles:"
-    docker ps
-    netstat -tlpn
+    docker ps | grep --color=never blockchain
+    netstat -tlpn | grep --color=never 0.0.0.0
     read -n 1 -s -r -p "Tapez une touche pour afficher le menu..."
 }
 
@@ -79,8 +79,8 @@ clear
             1)
                 echo "Voici la liste des ports disponibles: " ${PORT[@]}
                 echo "Voici la liste des chaînes de bloc disponibles (Docker):"
-                docker ps
-                netstat -tlpn
+                docker ps | grep --color=never blockchain
+                netstat -tlpn | grep --color=never 0.0.0.0
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             2)
@@ -124,26 +124,39 @@ clear
                 ;;
             5)
                 echo "Voici le contenu de la chaîne de bloc..."
-                curl "http://localhost:${PORT[$NOPORT]}/chain" | less
+                #curl "http://localhost:${PORT[$NOPORT]}/chain" | less
+                http "http://localhost:${PORT[$NOPORT]}/chain"
+                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             6)
                 echo "Voici le minage de la chaîne de bloc..."
-                curl "http://localhost:${PORT[$NOPORT]}/mine"
+                #curl "http://localhost:${PORT[$NOPORT]}/mine"
+                http "http://localhost:${PORT[$NOPORT]}/mine"
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             7)
                 read -p "Quel est le port de la chaîne de bloc à enregistrer? " PORTENR
-                echo "Node ajouté: blockchain$PORTENR:$PORTENR"
-                curl -X POST -H "Content-Type: application/json" -d "{
-                    \"nodes\": [ \"blockchain$PORTENR:$PORTENR\" ]
-                    }" "http://localhost:${PORT[$NOPORT]}/nodes/register"
-                read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
+                if [[ $PORTENR =~ ${PORT[$NOPORT]} ]]
+                then
+                    echo "ERREUR:"
+                    echo "       Impossible d'enregistrer la chaîne de blocs actuelle ($PORTENR)."
+                    echo "       Sinon, cela va créer une boucle sans fin au moment de l'action du consensus."
+                    echo "       Retour au menu..."
+                    read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
+                else
+                    echo "Noeud ajouté: blockchain$PORTENR:$PORTENR"
+                    curl -X POST -H "Content-Type: application/json" -d "{
+                        \"nodes\": [ \"blockchain$PORTENR:$PORTENR\" ]
+                        }" "http://localhost:${PORT[$NOPORT]}/nodes/register"
+                    read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
+                fi
                 ;;
             8)
                 echo Le port considéré est: ${PORT[$NOPORT]}
                 echo "La résolution (consensus) sera faite sur cette chaîne de blocs..."
-                echo "curl \"http://localhost:${PORT[$NOPORT]}/nodes/resolve\""
-                curl "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
+                echo "http \"http://localhost:${PORT[$NOPORT]}/nodes/resolve\""
+                #curl "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
+                http "http://localhost:${PORT[$NOPORT]}/nodes/resolve"
                 read -n 1 -s -r -p "Tapez une touche pour revenir au menu..."
                 ;;
             9)
@@ -162,8 +175,8 @@ clear
             10)
                 echo "Sortie du script."
                 echo "Script de gestion du blockchain écrit en Python"
-                echo "disponible à https://github.com/dvf/blockchain"
-                echo "Écrit par FND avril 2018."
+                echo "disponible à https://github.com/demers/blockchain"
+                echo "Écrit par FND avril 2018, mars 2022."
                 exit 0
     esac
 done

@@ -1,4 +1,3 @@
-#FROM ubuntu:17.10
 FROM ubuntu:18.04
 
 MAINTAINER FND <fndemers@csfoy.ca>
